@@ -128,6 +128,7 @@ PYTHONPATH=pandera:virtual_dataframe
 CUDF_VER?=22.06
 PYTHON_SRC=$(shell find -L "$(PRJ)" -type f -iname '*.py' | grep -v __pycache__)
 PYTHON_TST=$(shell find -L tests -type f -iname '*.py' | grep -v __pycache__)
+VDF_MODES=pandas cudf dask dask_cudf
 
 DOCKER_REPOSITORY = $(USER)
 # Data directory (can be in other place, in VM or Docker for example)
@@ -881,7 +882,7 @@ notebooks-test-dask_cudf:
 endif
 
 .PHONY: notebooks-test-all
-.make-notebooks-test: notebooks-test-pandas notebooks-test-cudf notebooks-test-dask notebooks-test-dask_cudf
+.make-notebooks-test: $(foreach ext,$(VDF_MODES),notebooks-test-$(ext))
 	@date >.make-notebooks-test
 
 ## Run notebook test for all *mode*
