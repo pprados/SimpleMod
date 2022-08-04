@@ -1060,5 +1060,5 @@ docker-top: .cid_docker_daemon
 	@$(SUDO) docker container top "$(PRJ)"
 
 ## Run the projet
-run: $(REQUIREMENTS))
-	python -m $(PRJ).$(PRJ)q
+run: $(REQUIREMENTS)
+	PYTHONPATH=.:virtual_dataframe:pandera python -m $(PRJ).$(PRJ)
