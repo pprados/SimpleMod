@@ -1,0 +1,6 @@
+[submodule "virtual-dataframe"]
+	path = virtual-dataframe
+	url = https://github.com/pprados/virtual-dataframe.git
+[submodule "pandera"]
+	path = pandera
+	url = https://github.com/pprados/pandera.git
