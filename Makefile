@@ -877,7 +877,7 @@ test: .make-test
 # SNIPPET pour vérifier les TU et le recalcul de tout les notebooks et scripts.
 # Cette règle est invoqué avant un commit sur la branche master de git.
 .PHONY: validate
-.make-validate: .make-test .make-typing $(DATA)/raw notebooks/* build/html build/linkcheck
+.make-validate: .make-test .make-typing $(DATA)/raw notebooks/*
 	@date >.make-validate
 ## Validate the version before release
 validate: .make-validate
