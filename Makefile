@@ -125,7 +125,7 @@ KERNEL ?=$(VENV)
 PRJ_PACKAGE:=$(PRJ)
 PYTHON_VERSION:=3.9
 PYTHONPATH=pandera:virtual_dataframe
-CUDF_VER=22.06
+CUDF_VER?=22.06
 PYTHON_SRC=$(shell find -L "$(PRJ)" -type f -iname '*.py' | grep -v __pycache__)
 PYTHON_TST=$(shell find -L tests -type f -iname '*.py' | grep -v __pycache__)
 
@@ -855,6 +855,38 @@ endif
 # Run only unit tests
 unit-test: .make-unit-test
 
+.PHONY: notebooks-test
+_make-notebooks-test-%: $(REQUIREMENTS) $(PYTHON_TST) $(PYTHON_SRC) $(JUPYTER_DATA_DIR)/kernels/$(KERNEL) notebooks/demo.ipynb
+	@$(VALIDATE_VENV)
+	@echo -e "$(cyan)Run notebook tests for mode=$(VDF_MODE)...$(normal)"
+	python $(PYTHON_PARAMS) -m papermill \
+		-k $(KERNEL) \
+		--log-level ERROR \
+		--no-report-mode \
+		notebooks/demo.ipynb \
+		-p mode $(VDF_MODE) /dev/null
+	@date >.make-notebooks-test-$*
+
+## Run notebooks test with a specific *mode*
+.PHONY: notebooks-test-*
+notebooks-test-%: $(REQUIREMENTS)
+	@VDF_MODE=$* $(MAKE) --no-print-directory _make-notebooks-test-$*
+
+ifneq ($(USE_GPU),-gpu)
+notebooks-test-cudf:
+	@echo -e "$(red)Ignore VDF_MODE=cudf$(normal)"
+
+notebooks-test-dask_cudf:
+	@echo -e "$(red)Ignore VDF_MODE=dask_cudf$(normal)"
+endif
+
+.PHONY: notebooks-test-all
+.make-notebooks-test: notebooks-test-pandas notebooks-test-cudf notebooks-test-dask notebooks-test-dask_cudf
+	@date >.make-notebooks-test
+
+## Run notebook test for all *mode*
+notebooks-test: .make-notebooks-test
+
 .make-functional-test: $(REQUIREMENTS) $(PYTHON_TST) $(PYTHON_SRC)
 	@$(VALIDATE_VENV)
 	@echo -e "$(cyan)Run functional tests...$(normal)"
@@ -863,7 +895,7 @@ unit-test: .make-unit-test
 # Run only functional tests
 functional-test: .make-functional-test
 
-.make-test: $(REQUIREMENTS) $(PYTHON_TST) $(PYTHON_SRC)
+.make-test: $(REQUIREMENTS) $(PYTHON_TST) $(PYTHON_SRC) .make-notebooks-test
 	@echo -e "$(cyan)Run all tests...$(normal)"
 	python -m pytest $(PYTEST_ARGS) -s tests
 	#python setup.py test

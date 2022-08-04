@@ -40,6 +40,7 @@ test_requirements: List[str] = [
     # 'pytest-mock',
     'pandas-stubs',
     # 'unittest2',
+    'papermill',
 ]
 
 # Package nécessaires aux builds mais pas au run
