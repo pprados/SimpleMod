@@ -8,6 +8,7 @@ class _InputDataPol_schema(SchemaModel):
     id_pool: Series[int]
     age: Series[int]
     math_res: Series[float]
+    
     class Config:
         strict = True
         coerce = True

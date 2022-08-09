@@ -1,10 +1,11 @@
 from pandera import SchemaModel
-from pandera.typing import Series, DataFrame
+from pandera.checks import SeriesCheckObj
+from pandera.typing import Series, DataFrame, Index
 
 
 class _PoolDF_schema(SchemaModel):
     id_sim: Series[int]
-    id_pool: Series[int]
+    id_pool: Index[int]
     math_res_opening: Series[float]
     math_res_bef_ps: Series[float]
     math_res_closing: Series[float]
@@ -15,26 +16,17 @@ class _PoolDF_schema(SchemaModel):
 
 
 PoolDF = DataFrame[_PoolDF_schema]
-PoolInfoClosing = DataFrame[_PoolDF_schema]
-PoolInfoOpening = DataFrame[_PoolDF_schema]
-PoolInfoBefPs = DataFrame[_PoolDF_schema]
 
-
-class _PoolPsRatesWithSpread_schema(_PoolDF_schema):
+class _PoolDFFull_schema(_PoolDF_schema):
     spread: Series[float]
-    class Config:
-        strict = True
-        coerce = True
-
-
-PoolPsRatesWithSpread = DataFrame[_PoolPsRatesWithSpread_schema]
-
-
-class _PoolPsRates_schema(_PoolDF_schema):
     ps_rate: Series[float]
+    tot_return: Series[float]
+    
     class Config:
         strict = True
         coerce = True
 
-
-PoolPsRates = DataFrame[_PoolPsRates_schema]
+PoolDFFull = DataFrame[_PoolDFFull_schema]
+PoolInfoClosing = DataFrame[_PoolDFFull_schema]
+PoolInfoOpening = DataFrame[_PoolDFFull_schema]
+PoolInfoBefPs = DataFrame[_PoolDFFull_schema]

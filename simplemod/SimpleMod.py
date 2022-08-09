@@ -5,7 +5,8 @@ import click
 import dotenv
 import pandas as pd
 
-from simplemod.constants import SIM_COUNT
+
+from simplemod.constants import SIM_COUNT, POL_COUNT, POOL_COUNT
 from simplemod.types import InputDataPol, InputDataPool, InputDataScenEcoEquityDF, PolDF, PoolDF
 from simplemod.model import one_year, projection
 from simplemod.tools import init_logger, logging
@@ -37,32 +38,15 @@ def main() -> int:
         dtype=schema_to_dtypes(InputDataScenEcoEquityDF, "id_sim")
     ).set_index("id_sim").loc[:SIM_COUNT, :]  # FIXME implement read_csv_with_schema / DataFrame_with_schema
 
-    # %% -- dimensions
-    nb_pol, _ = input_data_pol.shape
-    nb_pool, _ = input_data_pool.shape
-    nb_scenarios = SIM_COUNT if SIM_COUNT else input_data_scen_eco_equity.shape
 
-    # %% -- initialize calculation dataframes
-    pol_data = init_vdf_from_schema(
-        PolDF,
-        nrows=compute(nb_scenarios * nb_pol)[0],  # FIXME
-        default_data=0)
-    pool_data = init_vdf_from_schema(
-        PoolDF,
-        nrows=compute(nb_scenarios * nb_pool)[0],  # FIXME
-        default_data=0)
-    # FIXME this section could be improved (would be straightforward if we have xarrays)
-    # pol_data["id_sim"] = VSeries(np.array(
-    #     [[i for j in range(compute(nb_pol)[0])] for i in range(nb_scenarios)])
-    #                              .reshape(compute(nb_scenarios * nb_pol)[0]))
-    # pool_data["id_sim"] = VSeries(np.array(
-    #     [[i for j in range(compute(nb_pool)[0])] for i in range(nb_scenarios)])
-    #                               .reshape(compute(nb_scenarios * nb_pool)[0]))
+    #print(input_data_scen_eco_equity.head())
+
 
     # %% -- projection
-    projection(input_data_pol,
+    pol_data, pool_data = projection(input_data_pol,
                input_data_pool,
                input_data_scen_eco_equity)
+
     return 0
 
 

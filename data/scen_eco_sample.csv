@@ -1,4 +1,4 @@
-id_sim,year_0,year_1,year_2,year_3,measure
+id_sim,y0,y1,y2,y3,measure
 0,100,73,78.11,107.7918,ret_idx
 1,100,74,48.1,48.581,ret_idx
 2,100,89,105.91,141.9194,ret_idx
